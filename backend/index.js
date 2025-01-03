@@ -1,16 +1,36 @@
+require('dotenv').config(); // Ensure this is the first line
+const MONGODB_URI="mongodb+srv://chitareavinash6:LBUC89yql09ngObf@cluster0.qe3oi.mongodb.net/?retryWrites=true&w=majority"
+console.log(MONGODB_URI);
+const userRoutes= require('./routes/userRoutes.js')
+const {notFound,errorHandler}=require  ('./middleware/errorMiddleware.js')
 const express=require('express');
-const dotenv=require('dotenv');
+
 const  app=express();
-dotenv.config();
+const cors = require('cors');
+app.use(cors({ origin: "http://localhost:5173" })); // Replace with your frontend's origin
+
+app.use(express.json());
+
+
+
 const {chats}= require('./data/data')
+const connectDB=require('./config/db')
+const colors=require("colors")
+
+
+
+connectDB()
 app.get('/',(req,res)=>{
-    res.send("App is running");
+    res.send("API is running sucessfully");
 })
 
 
-app.get('/api/chats',(req,res)=>{
-    res.send(chats)
-})
+
+app.use('/api/user',userRoutes)
+
+
+app.use(notFound);
+app.use(errorHandler);
 
 
 app.get('/api/chats/:id', (req, res) => {
@@ -28,5 +48,5 @@ app.get('/api/chats/:id', (req, res) => {
 
 const port=process.env.PORT||5000;
 app.listen(port,
-    console.log(`Server is listening on ${port}`));
+    console.log(`Server is listening on ${port}`.yellow.bold));
 
